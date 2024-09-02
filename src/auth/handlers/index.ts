@@ -24,11 +24,12 @@ export const signup = async (
   req: Request<{}, {}, AuthCredentials>,
   res: Response<SignUpResponse>
 ) => {
-  const { username, password } = req.body
+  const { username, password, members } = req.body
   logger.info(
     `Extracted 'username' and 'password': ${prettifyObject({
       username,
       password,
+      members,
     })}`
   )
 
@@ -38,7 +39,7 @@ export const signup = async (
   if (user) {
     logger.error(`Username already taken: ${username}`)
     return res.status(409).send({
-      message: 'username already taken',
+      message: 'username is already taken',
     })
   }
   // If it's not, hash the password
@@ -48,6 +49,7 @@ export const signup = async (
     data: {
       username,
       password: hasedPassword,
+      members: [...members, 'general'],
     },
   })
   logger.info(`User created: ${username}`)

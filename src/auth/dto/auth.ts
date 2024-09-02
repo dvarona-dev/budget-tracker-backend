@@ -3,6 +3,7 @@ export type SIGNUP_REDIRECT_URL = '/signin'
 export interface AuthCredentials {
   username: string
   password: string
+  members: string[]
 }
 
 export interface SignUpResponse {

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
 
@@ -11,6 +12,7 @@ const app = express()
 // START OF MIDDLEWARES ---
 
 app.use(express.json())
+app.use(cors())
 
 // --- END OF MIDDLEWARES
 

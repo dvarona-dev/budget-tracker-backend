@@ -1,6 +1,18 @@
 import { body } from 'express-validator'
 
-export const authCredentialsRules = [
+export const signupRules = [
+  body('username')
+    .isLength({ min: 4 })
+    .withMessage('username must be at least 4 characters long'),
+  body('password')
+    .isLength({ min: 7 })
+    .withMessage('password must be at least 7 characters long'),
+  body('members')
+    .isArray({ min: 1 })
+    .withMessage('members must be an array with at least one member'),
+]
+
+export const signinRules = [
   body('username')
     .isLength({ min: 4 })
     .withMessage('username must be at least 4 characters long'),

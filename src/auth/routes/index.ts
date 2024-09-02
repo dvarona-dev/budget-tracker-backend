@@ -5,14 +5,14 @@ import {
   expressValidator,
   successValidations,
 } from '../middleware'
-import { authCredentialsRules } from '../middleware/rules'
+import { signinRules, signupRules } from '../middleware/rules'
 
 const router = Router()
 
 router.post(
   '/signup',
   accessingRoute,
-  ...authCredentialsRules,
+  ...signupRules,
   expressValidator,
   successValidations,
   signup
@@ -21,7 +21,7 @@ router.post(
 router.post(
   '/signin',
   accessingRoute,
-  ...authCredentialsRules,
+  ...signinRules,
   expressValidator,
   successValidations,
   signin
