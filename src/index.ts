@@ -1,15 +1,28 @@
+import { PrismaClient } from '@prisma/client'
+import dotenv from 'dotenv'
 import express from 'express'
 
+export const prisma = new PrismaClient()
+
+dotenv.config({})
+
 const app = express()
+
+// START OF MIDDLEWARES ---
+
+app.use(express.json())
+
+// --- END OF MIDDLEWARES
 
 // START OF ROUTES ---
 
 import authRoutes from './auth/routes'
+import logger from './logger'
 app.use('/auth', authRoutes)
 
 // --- END OF ROUTES
 
-const PORT = 3000
+const PORT = process.env.PORT || 3000
 app.listen(PORT, () => {
-  console.info(`Running on port  ${PORT}...`)
+  logger.info(`Application running on port ${PORT}`)
 })

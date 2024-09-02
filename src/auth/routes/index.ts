@@ -1,11 +1,30 @@
 import { Router } from 'express'
 import { signin, signup } from '../handlers'
-import { signupValidators } from '../middleware/validators'
+import {
+  accessingRoute,
+  expressValidator,
+  successValidations,
+} from '../middleware'
+import { authCredentialsRules } from '../middleware/rules'
 
 const router = Router()
 
-router.post('/signup', ...signupValidators, signup)
+router.post(
+  '/signup',
+  accessingRoute,
+  ...authCredentialsRules,
+  expressValidator,
+  successValidations,
+  signup
+)
 
-router.post('/signin', signin)
+router.post(
+  '/signin',
+  accessingRoute,
+  ...authCredentialsRules,
+  expressValidator,
+  successValidations,
+  signin
+)
 
 export default router

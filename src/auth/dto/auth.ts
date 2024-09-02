@@ -7,9 +7,11 @@ export interface AuthCredentials {
 
 export interface SignUpResponse {
   message: string
-  redirect: SIGNUP_REDIRECT_URL
+  redirect?: SIGNUP_REDIRECT_URL
 }
 
 export interface SignInResponse {
-  access_token: string
+  message: string
+  access_token?: string
+  expiresIn?: string
 }
