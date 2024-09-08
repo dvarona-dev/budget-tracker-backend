@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import { signin, signup } from '../handlers'
 import {
   accessingRoute,
   expressValidator,
   successValidations,
-} from '../middleware'
+} from '../../middleware'
+import { signin, signup } from '../handlers'
 import { signinRules, signupRules } from '../middleware/rules'
 
 const router = Router()

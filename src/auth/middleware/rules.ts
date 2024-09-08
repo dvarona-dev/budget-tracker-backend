@@ -7,6 +7,11 @@ export const signupRules = [
   body('password')
     .isLength({ min: 7 })
     .withMessage('password must be at least 7 characters long'),
+  body('confirmPassword').custom(async (value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error('passwords do not match')
+    }
+  }),
   body('members')
     .isArray({ min: 1 })
     .withMessage('members must be an array with at least one member'),

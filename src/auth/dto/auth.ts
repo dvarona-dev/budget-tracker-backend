@@ -1,18 +1,24 @@
+import { User } from '@prisma/client'
+
 export type SIGNUP_REDIRECT_URL = '/signin'
 
-export interface AuthCredentials {
+export type AuthCredentials = {
   username: string
   password: string
   members: string[]
 }
 
-export interface SignUpResponse {
+export type SignUpResponse = {
   message: string
   redirect?: SIGNUP_REDIRECT_URL
 }
 
-export interface SignInResponse {
+export type SignInResponse = {
   message: string
   access_token?: string
   expiresIn?: string
+}
+
+export type UserModel = {
+  user: User
 }

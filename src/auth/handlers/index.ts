@@ -20,6 +20,16 @@ export const checkUserByUsername = async (
   return foundUser
 }
 
+export const checkUserById = async (id: string): Promise<User | null> => {
+  const foundUser = await prisma.user.findFirst({ where: { id } })
+
+  logger.debug(
+    `User found: ${foundUser ? prettifyObject(foundUser) : foundUser}`
+  )
+
+  return foundUser
+}
+
 export const signup = async (
   req: Request<{}, {}, AuthCredentials>,
   res: Response<SignUpResponse>

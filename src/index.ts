@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import express from 'express'
+import logger from './logger'
 
 export const prisma = new PrismaClient()
 
@@ -19,8 +20,9 @@ app.use(cors())
 // START OF ROUTES ---
 
 import authRoutes from './auth/routes'
-import logger from './logger'
+import budgetRoutes from './budget/routes'
 app.use('/auth', authRoutes)
+app.use('/budget', budgetRoutes)
 
 // --- END OF ROUTES
 

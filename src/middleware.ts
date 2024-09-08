@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { validationResult } from 'express-validator'
-import logger from '../../logger'
-import { prettifyObject } from '../../utils/format'
+import jwt from 'jsonwebtoken'
+import { checkUserById } from './auth/handlers'
+import logger from './logger'
+import { prettifyObject } from './utils/format'
 
 export const expressValidator = async (
   req: Request,
@@ -48,6 +50,37 @@ export const successValidations = async (
   logger.debug(`Request body: ${prettifyObject(req.body)}`)
   logger.debug(`Request query: ${prettifyObject(req.query)}`)
   logger.debug(`Request params: ${prettifyObject(req.params)}`)
+
+  next()
+}
+
+export const isAuthenticated = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { authorization } = req.headers
+  if (!authorization) {
+    return res.status(401).send({ message: 'unauthorized' })
+  }
+
+  const token = authorization.split(' ')[1]
+  if (!token) {
+    return res.status(401).send({ message: 'unauthorized' })
+  }
+
+  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string
+  try {
+    const { _id } = jwt.verify(token, JWT_SECRET_KEY) as { _id: string }
+    const user = await checkUserById(_id)
+    if (!user) {
+      return res.status(401).send({ message: 'unauthorized' })
+    }
+    req.body.user = user
+  } catch (err) {
+    logger.error(`JWT Token Verification failed:`, err)
+    return res.status(401).send({ message: 'unauthorized' })
+  }
 
   next()
 }
