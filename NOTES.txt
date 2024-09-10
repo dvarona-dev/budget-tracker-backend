@@ -1,2 +1,0 @@
-TODO:
-- Add 'passport' module for the authorized routes
