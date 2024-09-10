@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express'
 import { validationResult } from 'express-validator'
-import jwt from 'jsonwebtoken'
 import { checkUserById } from './auth/handlers'
 import logger from './logger'
 import { prettifyObject } from './utils/format'
+import { verifyJWT } from './utils/jwt'
 
 export const expressValidator = async (
   req: Request,
@@ -69,13 +69,14 @@ export const isAuthenticated = async (
     return res.status(401).send({ message: 'unauthorized' })
   }
 
-  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY as string
   try {
-    const { _id } = jwt.verify(token, JWT_SECRET_KEY) as { _id: string }
+    const { _id } = verifyJWT(token) as { _id: string }
     const user = await checkUserById(_id)
+
     if (!user) {
       return res.status(401).send({ message: 'unauthorized' })
     }
+
     req.body.user = user
   } catch (err) {
     logger.error(`JWT Token Verification failed:`, err)

@@ -1,3 +1,5 @@
+import { Budget } from '@prisma/client'
+
 export type BudgetPeriod = 15 | 30
 
 export type CreateBudgetBody = {
@@ -11,4 +13,9 @@ export type CreateBudgetBody = {
 export type BudgetItem = {
   description: string
   amount: number
+}
+
+export type CreateResponse = {
+  message: string
+  budget?: Budget
 }
