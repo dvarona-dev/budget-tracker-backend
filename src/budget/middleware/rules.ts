@@ -1,5 +1,6 @@
 import { body } from 'express-validator'
 import { prisma } from '../..'
+import logger from '../../logger'
 import { BudgetItem, BudgetPeriod } from '../dto/create'
 
 const checkIfValidDates = async (date: Date) => {
@@ -99,17 +100,27 @@ export const createBudgetRules = [
         return true
       })
 
-      const assignedToIds = validItems.map((item) => item.assignedTo)
-      const userMembers = await prisma.userMember.findMany({
-        where: {
-          id: {
-            in: assignedToIds,
+      try {
+        const assignedToIds = validItems.map((item) => item.assignedTo)
+        const userMembers = await prisma.userMember.findMany({
+          where: {
+            id: {
+              in: assignedToIds,
+            },
           },
-        },
-      })
-      const validAssignedToIds = userMembers.map((userMember) => userMember.id)
+        })
+        const validAssignedToIds = [
+          ...new Set(userMembers.map((userMember) => userMember.id)),
+        ]
 
-      if (validAssignedToIds.length !== items.length) {
+        if (
+          validItems.length !== items.length ||
+          validAssignedToIds.length < 0
+        ) {
+          throw new Error('invalid items')
+        }
+      } catch (error) {
+        logger.error(error)
         throw new Error('invalid items')
       }
     }),

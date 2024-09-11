@@ -14,8 +14,10 @@ import {
   VerifyTokenResponse,
 } from '../dto/auth'
 
-export const checkUserByUsername = async (username: string): Promise<User> => {
-  const foundUser: User = await prisma.user.findUniqueOrThrow({
+export const checkUserByUsername = async (
+  username: string
+): Promise<User | null> => {
+  const foundUser: User | null = await prisma.user.findUnique({
     where: { username },
   })
 
@@ -26,8 +28,8 @@ export const checkUserByUsername = async (username: string): Promise<User> => {
   return foundUser
 }
 
-export const checkUserById = async (id: string): Promise<User> => {
-  const foundUser: User = await prisma.user.findFirstOrThrow({ where: { id } })
+export const checkUserById = async (id: string): Promise<User | null> => {
+  const foundUser: User | null = await prisma.user.findUnique({ where: { id } })
 
   logger.debug(
     `User found: ${foundUser ? prettifyObject(foundUser) : foundUser}`
@@ -119,6 +121,12 @@ export const signin = async (
       })
     }
 
+    const members = await prisma.userMember.findMany({
+      where: {
+        userId: user.id,
+      },
+    })
+
     const token = signJWT(
       {
         _id: user.id.toString(),
@@ -129,7 +137,17 @@ export const signin = async (
 
     logger.info(`User signed in: ${username} with token: ${token}`)
 
-    res.send({ message: 'user found', access_token: token, expiresIn: '1h' })
+    res.send({
+      message: 'user found',
+      access_token: token,
+      expiresIn: '1h',
+      members: members.map((member) => {
+        return {
+          id: member.id.toString(),
+          name: member.name,
+        }
+      }),
+    })
   } catch (error) {
     logger.error(error)
     res.send({ message: 'server error in signing in' })

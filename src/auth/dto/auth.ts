@@ -17,6 +17,10 @@ export type SignInResponse = {
   message: string
   access_token?: string
   expiresIn?: string
+  members?: {
+    id: string
+    name: string
+  }[]
 }
 
 export type UserModel = {
