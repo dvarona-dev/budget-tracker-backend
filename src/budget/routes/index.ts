@@ -3,9 +3,9 @@ import {
   accessingRoute,
   expressValidator,
   isAuthenticated,
-  successValidations,
+  validRouteRequest,
 } from '../../middleware'
-import { create } from '../handlers'
+import { create, getAll } from '../handlers'
 import { createBudgetRules } from '../middleware/rules'
 
 const router = Router()
@@ -16,8 +16,16 @@ router.post(
   isAuthenticated,
   ...createBudgetRules,
   expressValidator,
-  successValidations,
+  validRouteRequest,
   create
+)
+
+router.get(
+  '/get-budgets',
+  accessingRoute,
+  isAuthenticated,
+  validRouteRequest,
+  getAll
 )
 
 export default router

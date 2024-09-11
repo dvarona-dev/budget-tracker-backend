@@ -2,7 +2,7 @@ import { Router } from 'express'
 import {
   accessingRoute,
   expressValidator,
-  successValidations,
+  validRouteRequest,
 } from '../../middleware'
 import { signin, signup, verifyToken } from '../handlers'
 import { signinRules, signupRules, verifyTokenRules } from '../middleware/rules'
@@ -14,7 +14,7 @@ router.post(
   accessingRoute,
   ...signupRules,
   expressValidator,
-  successValidations,
+  validRouteRequest,
   signup
 )
 
@@ -23,7 +23,7 @@ router.post(
   accessingRoute,
   ...signinRules,
   expressValidator,
-  successValidations,
+  validRouteRequest,
   signin
 )
 
@@ -32,7 +32,7 @@ router.post(
   accessingRoute,
   ...verifyTokenRules,
   expressValidator,
-  successValidations,
+  validRouteRequest,
   verifyToken
 )
 

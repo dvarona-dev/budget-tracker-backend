@@ -1,4 +1,4 @@
-import { Budget } from '@prisma/client'
+import { Budget, UserMember } from '@prisma/client'
 
 export type BudgetPeriod = 15 | 30
 
@@ -13,6 +13,7 @@ export type CreateBudgetBody = {
 export type BudgetItem = {
   description: string
   amount: number
+  assignedTo: UserMember['id']
 }
 
 export type CreateResponse = {

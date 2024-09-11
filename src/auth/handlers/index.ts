@@ -83,6 +83,7 @@ export const signup = async (
       redirect: SIGNUP_REDIRECT_URL,
     })
   } catch (error) {
+    logger.error(error)
     res.status(500).send({ message: 'server error in creating user' })
   }
 }
@@ -91,43 +92,48 @@ export const signin = async (
   req: Request<{}, {}, AuthCredentials>,
   res: Response<SignInResponse>
 ) => {
-  const { username, password } = req.body
-  logger.info(
-    `Extracted 'username' and 'password': ${prettifyObject({
-      username,
-      password,
-    })}`
-  )
+  try {
+    const { username, password } = req.body
+    logger.info(
+      `Extracted 'username' and 'password': ${prettifyObject({
+        username,
+        password,
+      })}`
+    )
 
-  const user = await checkUserByUsername(username)
+    const user = await checkUserByUsername(username)
 
-  if (!user) {
-    logger.error(`User not found: ${username}`)
-    return res.status(404).send({
-      message: 'invalid username or password',
-    })
+    if (!user) {
+      logger.error(`User not found: ${username}`)
+      return res.status(404).send({
+        message: 'invalid username or password',
+      })
+    }
+
+    const isPasswordValid = bcrypt.compareSync(password, user.password)
+
+    if (!isPasswordValid) {
+      logger.error(`Invalid password for user: ${username}`)
+      return res.status(404).send({
+        message: 'invalid username or password',
+      })
+    }
+
+    const token = signJWT(
+      {
+        _id: user.id.toString(),
+        username: user.username,
+      },
+      '15m'
+    )
+
+    logger.info(`User signed in: ${username} with token: ${token}`)
+
+    res.send({ message: 'user found', access_token: token, expiresIn: '1h' })
+  } catch (error) {
+    logger.error(error)
+    res.send({ message: 'server error in signing in' })
   }
-
-  const isPasswordValid = bcrypt.compareSync(password, user.password)
-
-  if (!isPasswordValid) {
-    logger.error(`Invalid password for user: ${username}`)
-    return res.status(404).send({
-      message: 'invalid username or password',
-    })
-  }
-
-  const token = signJWT(
-    {
-      _id: user.id.toString(),
-      username: user.username,
-    },
-    '15m'
-  )
-
-  logger.info(`User signed in: ${username} with token: ${token}`)
-
-  res.send({ message: 'user found', access_token: token, expiresIn: '1h' })
 }
 
 export const verifyToken = async (
@@ -147,6 +153,7 @@ export const verifyToken = async (
       throw new Error('invalid')
     }
   } catch (error) {
+    logger.error(error)
     res.send({
       message: 'invalid',
     })

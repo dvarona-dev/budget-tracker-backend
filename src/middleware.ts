@@ -29,7 +29,9 @@ export const accessingRoute = (
   _res: Response,
   next: NextFunction
 ) => {
-  logger.info(`Accessing POST [ ${req.originalUrl} ] route`)
+  logger.info(
+    `Accessing ${req.method.toUpperCase()} [ ${req.originalUrl} ] route`
+  )
 
   logger.debug(`Request headers: ${prettifyObject(req.headers)}`)
   logger.debug(`Request body: ${prettifyObject(req.body)}`)
@@ -39,12 +41,12 @@ export const accessingRoute = (
   next()
 }
 
-export const successValidations = async (
+export const validRouteRequest = async (
   req: Request,
   _res: Response,
   next: NextFunction
 ) => {
-  logger.info('Request has passed validation')
+  logger.info('Request has passed route process')
 
   logger.debug(`Request headers: ${prettifyObject(req.headers)}`)
   logger.debug(`Request body: ${prettifyObject(req.body)}`)

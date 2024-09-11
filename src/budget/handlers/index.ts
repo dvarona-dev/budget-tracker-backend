@@ -2,7 +2,9 @@ import { Budget } from '@prisma/client'
 import { Request, Response } from 'express'
 import { prisma } from '../..'
 import { UserModel } from '../../auth/dto/auth'
+import logger from '../../logger'
 import { CreateBudgetBody, CreateResponse } from '../dto/create'
+import { ViewResponse } from '../dto/view'
 
 export const create = async (
   req: Request<{}, {}, CreateBudgetBody & UserModel>,
@@ -11,8 +13,6 @@ export const create = async (
   try {
     const { user, cutoff_start, cutoff_end, payout_date, period, items } =
       req.body
-
-    console.log({ user, cutoff_start, cutoff_end, payout_date, period, items })
 
     const budget: Budget = await prisma.budget.create({
       data: {
@@ -29,7 +29,7 @@ export const create = async (
         description: item.description,
         amount: item.amount,
         budgetId: budget.id,
-        userMemberId: user.id,
+        userMemberId: item.assignedTo,
       })),
     })
 
@@ -42,6 +42,38 @@ export const create = async (
 
     res.send({ message: 'success', budget: newBudget })
   } catch (error) {
+    logger.error(error)
     res.status(500).send({ message: 'server error in creating budget' })
+  }
+}
+
+export const getAll = async (
+  req: Request<{}, {}, UserModel>,
+  res: Response<ViewResponse>
+) => {
+  try {
+    const user = req.body.user
+    const budgets: Budget[] = await prisma.budget.findMany({
+      where: {
+        userId: user.id,
+      },
+      include: {
+        items: {
+          select: {
+            description: true,
+            amount: true,
+            userMemberId: true,
+          },
+        },
+      },
+    })
+
+    res.send({
+      message: 'success',
+      budgets,
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'server error in fetching budget' })
   }
 }

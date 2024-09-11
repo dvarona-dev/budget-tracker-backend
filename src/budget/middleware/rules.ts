@@ -1,4 +1,5 @@
 import { body } from 'express-validator'
+import { prisma } from '../..'
 import { BudgetItem, BudgetPeriod } from '../dto/create'
 
 const checkIfValidDates = async (date: Date) => {
@@ -67,25 +68,48 @@ export const createBudgetRules = [
     if (![15, 30].includes(value))
       throw new Error('period must be numeric 15 or 30')
   }),
+  body('period').custom(async (value: BudgetPeriod) => {
+    if (![15, 30].includes(value))
+      throw new Error('period must be numeric 15 or 30')
+  }),
   body('items')
     .isArray({ min: 1 })
     .withMessage('items must be an array with at least one item')
     .custom(async (value: BudgetItem[]) => {
       const items = value
       const validItems = items.filter((item) => {
-        const { description, amount } = item
-        if (!description || !amount || typeof amount !== 'number') {
+        const { description, amount, assignedTo } = item
+        if (
+          !description ||
+          !amount ||
+          !assignedTo ||
+          typeof amount !== 'number'
+        ) {
           return false
         }
 
-        if (description.trim() === '' || amount <= 0) {
+        if (
+          assignedTo.trim() === '' ||
+          description.trim() === '' ||
+          amount <= 0
+        ) {
           return false
         }
 
         return true
       })
 
-      if (validItems.length !== items.length) {
+      const assignedToIds = validItems.map((item) => item.assignedTo)
+      const userMembers = await prisma.userMember.findMany({
+        where: {
+          id: {
+            in: assignedToIds,
+          },
+        },
+      })
+      const validAssignedToIds = userMembers.map((userMember) => userMember.id)
+
+      if (validAssignedToIds.length !== items.length) {
         throw new Error('invalid items')
       }
     }),
