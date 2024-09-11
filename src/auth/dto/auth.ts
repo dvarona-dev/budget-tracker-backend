@@ -22,3 +22,11 @@ export type SignInResponse = {
 export type UserModel = {
   user: User
 }
+
+export type VerifyTokenResponse = {
+  message: 'invalid' | 'valid'
+}
+
+export type VerifyTokenBody = {
+  token: string
+}

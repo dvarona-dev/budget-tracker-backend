@@ -4,9 +4,15 @@ import { Request, Response } from 'express'
 import { prisma } from '../..'
 import logger from '../../logger'
 import { prettifyObject } from '../../utils/format'
-import { signJWT } from '../../utils/jwt'
+import { signJWT, verifyJWT } from '../../utils/jwt'
 import { SIGNUP_REDIRECT_URL } from '../const'
-import { AuthCredentials, SignInResponse, SignUpResponse } from '../dto/auth'
+import {
+  AuthCredentials,
+  SignInResponse,
+  SignUpResponse,
+  VerifyTokenBody,
+  VerifyTokenResponse,
+} from '../dto/auth'
 
 export const checkUserByUsername = async (username: string): Promise<User> => {
   const foundUser: User = await prisma.user.findUniqueOrThrow({
@@ -122,4 +128,27 @@ export const signin = async (
   logger.info(`User signed in: ${username} with token: ${token}`)
 
   res.send({ message: 'user found', access_token: token, expiresIn: '1h' })
+}
+
+export const verifyToken = async (
+  req: Request<{}, {}, VerifyTokenBody>,
+  res: Response<VerifyTokenResponse>
+) => {
+  const { token } = req.body
+
+  try {
+    const verifyToken = verifyJWT(token)
+
+    if (verifyToken) {
+      res.send({
+        message: 'valid',
+      })
+    } else {
+      throw new Error('invalid')
+    }
+  } catch (error) {
+    res.send({
+      message: 'invalid',
+    })
+  }
 }

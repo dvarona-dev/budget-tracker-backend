@@ -40,7 +40,7 @@ export const create = async (
       },
     })
 
-    res.send({ message: 'budget is successfully created', budget: newBudget })
+    res.send({ message: 'success', budget: newBudget })
   } catch (error) {
     res.status(500).send({ message: 'server error in creating budget' })
   }

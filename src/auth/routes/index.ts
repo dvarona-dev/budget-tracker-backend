@@ -4,8 +4,8 @@ import {
   expressValidator,
   successValidations,
 } from '../../middleware'
-import { signin, signup } from '../handlers'
-import { signinRules, signupRules } from '../middleware/rules'
+import { signin, signup, verifyToken } from '../handlers'
+import { signinRules, signupRules, verifyTokenRules } from '../middleware/rules'
 
 const router = Router()
 
@@ -25,6 +25,15 @@ router.post(
   expressValidator,
   successValidations,
   signin
+)
+
+router.post(
+  '/verify-token',
+  accessingRoute,
+  ...verifyTokenRules,
+  expressValidator,
+  successValidations,
+  verifyToken
 )
 
 export default router

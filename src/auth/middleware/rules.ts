@@ -25,3 +25,7 @@ export const signinRules = [
     .isLength({ min: 7 })
     .withMessage('password must be at least 7 characters long'),
 ]
+
+export const verifyTokenRules = [
+  body('token').notEmpty().withMessage('token is required'),
+]
