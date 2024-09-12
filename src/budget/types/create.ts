@@ -1,5 +1,5 @@
 import { Budget } from '@prisma/client'
-import { BudgetItem, BudgetPeriod } from '.'
+import { BudgetItem, BudgetPeriod } from './budget'
 
 export type CreateBudgetBody = {
   cutoff_start: Date

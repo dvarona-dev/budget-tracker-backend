@@ -19,10 +19,12 @@ app.use(cors())
 
 // START OF ROUTES ---
 
+import adminRoutes from './admin/routes'
 import authRoutes from './auth/routes'
 import budgetRoutes from './budget/routes'
 app.use('/auth', authRoutes)
 app.use('/budget', budgetRoutes)
+app.use('/admin', adminRoutes)
 
 // --- END OF ROUTES
 

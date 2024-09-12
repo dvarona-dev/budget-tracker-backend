@@ -1,7 +1,7 @@
 import { body } from 'express-validator'
 import { prisma } from '../..'
 import logger from '../../logger'
-import { BudgetItem, BudgetPeriod } from '../types/create'
+import { BudgetItem, BudgetPeriod } from '../types/budget'
 
 const checkIfValidDates = async (date: Date) => {
   if (isNaN(date.getTime())) {
