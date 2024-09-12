@@ -8,8 +8,6 @@ export const signupRules = [
     .isLength({ min: 7 })
     .withMessage('password must be at least 7 characters long'),
   body('confirmPassword').custom(async (value, { req }) => {
-    console.log('🚀 ~ body ~ value:', value)
-    console.log('🚀 ~ body ~ req.body.password:', req.body.password)
     if (value !== req.body.password) {
       throw new Error('passwords do not match')
     }

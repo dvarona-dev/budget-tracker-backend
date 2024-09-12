@@ -7,12 +7,13 @@ import { prettifyObject } from '../../utils/format'
 import { signJWT, verifyJWT } from '../../utils/jwt'
 import { SIGNUP_REDIRECT_URL } from '../const'
 import {
-  AuthCredentials,
+  SignInBody,
   SignInResponse,
+  SignUpBody,
   SignUpResponse,
   VerifyTokenBody,
   VerifyTokenResponse,
-} from '../dto/auth'
+} from '../types'
 
 export const checkUserByUsername = async (
   username: string
@@ -39,7 +40,7 @@ export const checkUserById = async (id: string): Promise<User | null> => {
 }
 
 export const signup = async (
-  req: Request<{}, {}, AuthCredentials>,
+  req: Request<{}, {}, SignUpBody>,
   res: Response<SignUpResponse>
 ) => {
   try {
@@ -78,6 +79,7 @@ export const signup = async (
         },
       },
     })
+
     logger.info(`User created: ${username}`)
 
     res.send({
@@ -91,7 +93,7 @@ export const signup = async (
 }
 
 export const signin = async (
-  req: Request<{}, {}, AuthCredentials>,
+  req: Request<{}, {}, SignInBody>,
   res: Response<SignInResponse>
 ) => {
   try {
@@ -140,7 +142,7 @@ export const signin = async (
     res.send({
       message: 'user found',
       access_token: token,
-      expiresIn: '1h',
+      expiresIn: '30m',
       members: members.map((member) => {
         return {
           id: member.id.toString(),
@@ -164,6 +166,8 @@ export const verifyToken = async (
     const verifyToken = verifyJWT(token)
 
     if (verifyToken) {
+      logger.info(`Token verified: ${token}`)
+
       res.send({
         message: 'valid',
       })

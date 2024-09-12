@@ -1,10 +1,10 @@
 import { Budget } from '@prisma/client'
 import { Request, Response } from 'express'
 import { prisma } from '../..'
-import { UserModel } from '../../auth/dto/auth'
+import { UserModel } from '../../auth/types'
 import logger from '../../logger'
-import { CreateBudgetBody, CreateResponse } from '../dto/create'
-import { ViewResponse } from '../dto/view'
+import { CreateBudgetBody, CreateResponse } from '../types/create'
+import { ViewResponse } from '../types/view'
 
 export const create = async (
   req: Request<{}, {}, CreateBudgetBody & UserModel>,
@@ -40,6 +40,8 @@ export const create = async (
       },
     })
 
+    logger.info('New budget created successfully: ', newBudget.id)
+
     res.send({ message: 'success', budget: newBudget })
   } catch (error) {
     logger.error(error)
@@ -67,6 +69,8 @@ export const getAll = async (
         },
       },
     })
+
+    logger.info('All budgets fetched successfully: ', budgets)
 
     res.send({
       message: 'success',

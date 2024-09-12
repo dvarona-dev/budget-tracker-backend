@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken'
 import logger from '../logger'
 
-export const signJWT = (payload: object, expiresIn: string | number) => {
+export const signJWT = (
+  payload: object,
+  expiresIn: string | number
+): string => {
   try {
     const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
     if (!JWT_SECRET_KEY) {
@@ -15,7 +18,7 @@ export const signJWT = (payload: object, expiresIn: string | number) => {
   }
 }
 
-export const verifyJWT = (token: string) => {
+export const verifyJWT = (token: string): string | jwt.JwtPayload => {
   try {
     const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
     if (!JWT_SECRET_KEY) {

@@ -13,14 +13,9 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
-model UserMember {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  name        String       @unique
-  User        User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId      String       @db.ObjectId
-  budgetItems BudgetItem[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+enum Period {
+  fifteen
+  thirty
 }
 
 model User {
@@ -33,21 +28,14 @@ model User {
   updatedAt DateTime     @updatedAt
 }
 
-enum Period {
-  fifteen
-  thirty
-}
-
-model BudgetItem {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  description  String
-  amount       Float
-  Budget       Budget     @relation(fields: [budgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  budgetId     String     @db.ObjectId
-  UserMember   UserMember @relation(fields: [userMemberId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userMemberId String     @db.ObjectId
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+model UserMember {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  name        String       @unique
+  User        User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId      String       @db.ObjectId
+  budgetItems BudgetItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Budget {
@@ -61,4 +49,16 @@ model Budget {
   items        BudgetItem[]
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+}
+
+model BudgetItem {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  description  String
+  amount       Float
+  Budget       Budget     @relation(fields: [budgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  budgetId     String     @db.ObjectId
+  UserMember   UserMember @relation(fields: [userMemberId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userMemberId String     @db.ObjectId
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
