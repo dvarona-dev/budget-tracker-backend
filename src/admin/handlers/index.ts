@@ -98,21 +98,28 @@ export const getIncome = async (
   try {
     const { user } = req.body
 
-    const income: Income[] = await prisma.income.findMany({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        additionalIncomes: true,
-      },
-    })
+    try {
+      const income: Income = await prisma.income.findFirstOrThrow({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          additionalIncomes: true,
+        },
+      })
 
-    logger.info(`Income budget fetched: ${prettifyObject(income)}`)
+      logger.info(`Income budget fetched: ${prettifyObject(income)}`)
 
-    res.send({
-      message: 'success',
-      income,
-    })
+      res.send({
+        message: 'success',
+        income,
+      })
+    } catch (error) {
+      logger.error(error)
+      res.send({
+        message: 'success',
+      })
+    }
   } catch (error) {
     logger.error(error)
     res.status(500).send({ message: 'failed' })
