@@ -76,6 +76,24 @@ export const updateExpenses = async (
   try {
     const { expenses, user } = req.body
 
+    const expenseIds = expenses
+      .filter((expense) => expense.id)
+      .map((expense) => expense.id)
+
+    const willDeleteExpenses = await prisma.expense.findMany({
+      where: {
+        userId: user.id,
+        id: { notIn: expenseIds },
+      },
+    })
+
+    await Promise.all(
+      willDeleteExpenses.map(async (expense) => {
+        await prisma.expense.delete({ where: { id: expense.id } })
+        logger.info(`Expense is deleted: ${prettifyObject(expense)}`)
+      })
+    )
+
     await Promise.all(
       expenses.map(async (expense) => {
         const { id, description, amount, period } = expense

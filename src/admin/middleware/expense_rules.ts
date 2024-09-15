@@ -18,14 +18,14 @@ export const newExpenseRules = [
           typeof amount !== 'number' ||
           amount <= 0
         ) {
-          throw new Error('one or more additionals are invalid')
+          throw new Error('one or more expense items are invalid')
         }
 
         return true
       })
 
       if (validItems.length !== expenses.length) {
-        throw new Error('one or more additionals are invalid')
+        throw new Error('one or more expense items are invalid')
       }
 
       return true
@@ -69,7 +69,7 @@ export const updateExpenseRules = [
       )
 
       if (validItems.filter(Boolean).length !== expenses.length) {
-        throw new Error('one or more additionals are invalid')
+        throw new Error('one or more expense items are invalid')
       }
 
       return true
