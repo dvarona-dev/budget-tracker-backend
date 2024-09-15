@@ -1,5 +1,5 @@
 import { body } from 'express-validator'
-import { AdditionalIncome } from '../types'
+import { AdditionalIncome } from '../types/income'
 
 const incomeRules = [
   body('hourRate')

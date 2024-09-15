@@ -4,7 +4,11 @@ import { prisma } from '../..'
 import { UserModel } from '../../auth/types'
 import logger from '../../logger'
 import { prettifyObject } from '../../utils/format'
-import { IncomeResponse, NewIncomeBody, UpdateIncomeBody } from '../types'
+import {
+  IncomeResponse,
+  NewIncomeBody,
+  UpdateIncomeBody,
+} from '../types/income'
 
 export const newIncome = async (
   req: Request<{}, {}, NewIncomeBody & UserModel>,

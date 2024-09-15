@@ -5,13 +5,13 @@ import {
   isAuthenticated,
   validRouteRequest,
 } from '../../middleware'
-import { getIncome, newIncome, updateIncome } from '../handlers'
-import { newIncomeRules, updateIncomeRules } from '../middleware/rules'
+import { getIncome, newIncome, updateIncome } from '../handlers/income'
+import { newIncomeRules, updateIncomeRules } from '../middleware/income_rules'
 
 const router = Router()
 
 router.get(
-  '/income',
+  '/',
   accessingRoute,
   isAuthenticated,
   expressValidator,
@@ -20,7 +20,7 @@ router.get(
 )
 
 router.post(
-  '/income',
+  '/',
   accessingRoute,
   isAuthenticated,
   ...newIncomeRules,
@@ -30,7 +30,7 @@ router.post(
 )
 
 router.put(
-  '/income',
+  '/',
   accessingRoute,
   isAuthenticated,
   ...updateIncomeRules,
