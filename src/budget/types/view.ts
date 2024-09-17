@@ -1,6 +1,6 @@
-import { Budget } from '@prisma/client'
+import { GetBudgetsResponse } from './budget'
 
 export type ViewResponse = {
   message: string
-  budgets?: Budget[]
+  budgets?: GetBudgetsResponse[]
 }

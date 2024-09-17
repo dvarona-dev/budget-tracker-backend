@@ -6,6 +6,8 @@ import logger from '../../logger'
 import { CreateBudgetBody, CreateResponse } from '../types/create'
 import { ViewResponse } from '../types/view'
 import { prettifyObject } from '../../utils/format'
+import { getWorkDays } from '../../utils'
+import { HOURS_PER_DAY } from '../constants'
 
 export const create = async (
   req: Request<{}, {}, CreateBudgetBody & UserModel>,
@@ -78,15 +80,121 @@ export const getAll = async (
         },
       },
     })
+    const income = await prisma.income.findFirstOrThrow({
+      where: {
+        userId: user.id,
+      },
+    })
+    const additionalIncomes = await prisma.additionalIncome.findMany({
+      where: {
+        incomeId: income.id,
+      },
+    })
+    const totalAdditionalIncomes = additionalIncomes.reduce(
+      (acc, additionalIncome) => acc + additionalIncome.amount,
+      0
+    )
 
-    logger.info(`All budgets fetched successfully: ${budgets}`)
+    const formattedBudgets = await Promise.all(
+      budgets.map(async (budget) => {
+        const deductions = await prisma.deduction.findMany({
+          where: {
+            userId: user.id,
+            period: budget.period,
+          },
+        })
+        const totalDeductions = deductions.reduce(
+          (acc, deduction) => acc + deduction.amount,
+          0
+        )
+
+        const noOfWorkDays = await getWorkDays(
+          budget.cutoff_start,
+          budget.cutoff_end,
+          user.id
+        )
+
+        const budgetItems = (
+          await prisma.budgetItem.findMany({
+            where: {
+              budgetId: budget.id,
+            },
+            select: {
+              id: true,
+              description: true,
+              amount: true,
+              UserMember: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          })
+        ).map((budgetItem) => {
+          return {
+            id: budgetItem.id,
+            description: budgetItem.description,
+            amount: budgetItem.amount,
+            assignedTo: budgetItem.UserMember.name,
+          }
+        })
+        const expenses = (
+          await prisma.expense.findMany({
+            where: {
+              userId: user.id,
+              period: budget.period,
+            },
+            select: {
+              id: true,
+              description: true,
+              amount: true,
+            },
+          })
+        ).map((expense) => {
+          return {
+            id: expense.id,
+            description: expense.description,
+            amount: expense.amount,
+            assignedTo: 'general',
+          }
+        })
+        const allExpenses = [...budgetItems, ...expenses]
+        const totalExpenses = allExpenses.reduce(
+          (acc, expense) => acc + expense.amount,
+          0
+        )
+
+        const noOfHours = noOfWorkDays * (HOURS_PER_DAY + budget.extraHours)
+        const grossSalary = income.hourRate * noOfHours
+        const netSalary = grossSalary - totalDeductions
+        const netSalaryWithAdditionalIncomes =
+          netSalary + totalAdditionalIncomes
+        const remainingBudget = netSalaryWithAdditionalIncomes - totalExpenses
+
+        return {
+          noOfHours,
+          grossSalary,
+          netSalary,
+          totalAdditionalIncomes,
+          netSalaryWithAdditionalIncomes,
+          totalExpenses,
+          remainingBudget,
+          allExpenses,
+        }
+      })
+    )
+
+    logger.info(
+      `All budgets fetched successfully: ${prettifyObject(formattedBudgets)}`
+    )
 
     res.send({
       message: 'success',
-      budgets,
+      budgets: formattedBudgets,
     })
   } catch (error) {
     logger.error(error)
-    res.status(500).send({ message: 'server error in fetching budget' })
+    res.status(500).send({ message: 'server error in fetching budgets' })
   }
 }
