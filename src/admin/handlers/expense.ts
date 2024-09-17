@@ -3,8 +3,7 @@ import logger from '../../logger'
 import { UserModel } from '../../auth/types'
 import {
   GetExpenseResponse,
-  NewExpenseBody,
-  NewExpenseResponse,
+  UpdateExpenseResponse,
   UpdateExpenseBody,
 } from '../types/expense'
 import { prisma } from '../..'
@@ -37,41 +36,9 @@ export const getExpenses = async (
   }
 }
 
-export const newExpenses = async (
-  req: Request<{}, {}, NewExpenseBody & UserModel>,
-  res: Response<NewExpenseResponse>
-) => {
-  try {
-    const { expenses, user } = req.body
-
-    await Promise.all(
-      expenses.map(async (expense) => {
-        const { description, amount, period } = expense
-        const newExpense = await prisma.expense.create({
-          data: {
-            description,
-            amount,
-            period: period === 15 ? 'fifteen' : 'thirty',
-            userId: user.id,
-          },
-        })
-
-        logger.info(`Expense is created: ${prettifyObject(newExpense)}`)
-      })
-    )
-
-    res.send({
-      message: 'success',
-    })
-  } catch (error) {
-    logger.error(error)
-    res.status(500).send({ message: 'failed' })
-  }
-}
-
 export const updateExpenses = async (
   req: Request<{}, {}, UpdateExpenseBody & UserModel>,
-  res: Response<NewExpenseResponse>
+  res: Response<UpdateExpenseResponse>
 ) => {
   try {
     const { expenses, user } = req.body

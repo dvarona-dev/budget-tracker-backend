@@ -1,15 +1,15 @@
 import { body } from 'express-validator'
-import { TExpense } from '../types/expense'
 import { prisma } from '../..'
+import { TDeduction } from '../types/deduction'
 
-export const updateExpenseRules = [
-  body('expenses')
+export const updateDeductionRules = [
+  body('deductions')
     .isArray({ min: 1 })
-    .withMessage('expenses must be an array with at least one item')
-    .custom(async (expenses: TExpense[]) => {
+    .withMessage('deductions must be an array with at least one item')
+    .custom(async (deductions: TDeduction[]) => {
       const validItems = await Promise.all(
-        expenses.map(async (expense) => {
-          const { id, description, amount, period } = expense
+        deductions.map(async (deduction) => {
+          const { id, description, amount, period } = deduction
           if (
             !description ||
             !amount ||
@@ -23,7 +23,7 @@ export const updateExpenseRules = [
           }
 
           if (id) {
-            const expenseInDb = await prisma.expense.findUnique({
+            const expenseInDb = await prisma.deduction.findUnique({
               where: {
                 id,
               },
@@ -38,8 +38,8 @@ export const updateExpenseRules = [
         })
       )
 
-      if (validItems.filter(Boolean).length !== expenses.length) {
-        throw new Error('one or more expense item is invalid')
+      if (validItems.filter(Boolean).length !== deductions.length) {
+        throw new Error('one or more deduction item is invalid')
       }
 
       return true

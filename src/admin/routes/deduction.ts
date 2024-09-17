@@ -5,8 +5,8 @@ import {
   isAuthenticated,
   validRouteRequest,
 } from '../../middleware'
-import { getExpenses, updateExpenses } from '../handlers/expense'
-import { updateExpenseRules } from '../middleware/expense_rules'
+import { getDeductions, updateDeductions } from '../handlers/deduction'
+import { updateDeductionRules } from '../middleware/deduction_rules'
 
 const router = Router()
 
@@ -16,17 +16,17 @@ router.get(
   isAuthenticated,
   expressValidator,
   validRouteRequest,
-  getExpenses
+  getDeductions
 )
 
 router.put(
   '/',
   accessingRoute,
   isAuthenticated,
-  ...updateExpenseRules,
+  ...updateDeductionRules,
   expressValidator,
   validRouteRequest,
-  updateExpenses
+  updateDeductions
 )
 
 export default router

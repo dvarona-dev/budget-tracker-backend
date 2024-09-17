@@ -7,11 +7,7 @@ export type TExpense = {
   period: number
 }
 
-export type NewExpenseBody = {
-  expenses: TExpense[]
-}
-
-export type NewExpenseResponse = {
+export type UpdateExpenseResponse = {
   message: 'success' | 'failed'
 }
 
