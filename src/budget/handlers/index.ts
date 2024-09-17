@@ -5,6 +5,7 @@ import { UserModel } from '../../auth/types'
 import logger from '../../logger'
 import { CreateBudgetBody, CreateResponse } from '../types/create'
 import { ViewResponse } from '../types/view'
+import { prettifyObject } from '../../utils/format'
 
 export const create = async (
   req: Request<{}, {}, CreateBudgetBody & UserModel>,
@@ -48,7 +49,7 @@ export const create = async (
       },
     })
 
-    logger.info('New budget created successfully: ', newBudget.id)
+    logger.info(`New budget created successfully: ${prettifyObject(newBudget)}`)
 
     res.send({ message: 'success', budget: newBudget })
   } catch (error) {
@@ -78,7 +79,7 @@ export const getAll = async (
       },
     })
 
-    logger.info('All budgets fetched successfully: ', budgets)
+    logger.info(`All budgets fetched successfully: ${budgets}`)
 
     res.send({
       message: 'success',
