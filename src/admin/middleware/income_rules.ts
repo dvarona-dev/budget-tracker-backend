@@ -13,7 +13,6 @@ const incomeRules = [
     .custom(async (additionals: AdditionalIncome[], { req }) => {
       const validItems = additionals.filter((item) => {
         const { id, description, amount } = item
-        console.log(req.body.incomeId ? !id : true)
         if (
           (req.body.incomeId ? !id : false) ||
           !description ||

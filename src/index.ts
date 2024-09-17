@@ -24,11 +24,13 @@ import budgetRoutes from './budget/routes'
 import incomeRoutes from './admin/routes/income'
 import expenseRoutes from './admin/routes/expense'
 import deductionRoutes from './admin/routes/deduction'
+import holidayRoutes from './admin/routes/holiday'
 app.use('/auth', authRoutes)
 app.use('/budget', budgetRoutes)
 app.use('/admin/income', incomeRoutes)
 app.use('/admin/expense', expenseRoutes)
 app.use('/admin/deduction', deductionRoutes)
+app.use('/admin/holiday', holidayRoutes)
 
 // catch all other routes and return 404
 app.use('*', (_, res: Response) => {
