@@ -6,6 +6,7 @@ export type CreateBudgetBody = {
   cutoff_end: Date
   payout_date: Date
   period: BudgetPeriod
+  extraHours: number
   items: BudgetItem[]
 }
 

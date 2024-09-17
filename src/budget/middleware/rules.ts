@@ -69,10 +69,7 @@ export const createBudgetRules = [
     if (![15, 30].includes(value))
       throw new Error('period must be numeric 15 or 30')
   }),
-  body('period').custom(async (value: BudgetPeriod) => {
-    if (![15, 30].includes(value))
-      throw new Error('period must be numeric 15 or 30')
-  }),
+  body('extraHours').isNumeric().withMessage('hours must be numeric'),
   body('items')
     .isArray({ min: 1 })
     .withMessage('items must be an array with at least one item')

@@ -11,14 +11,22 @@ export const create = async (
   res: Response<CreateResponse>
 ) => {
   try {
-    const { user, cutoff_start, cutoff_end, payout_date, period, items } =
-      req.body
+    const {
+      user,
+      cutoff_start,
+      cutoff_end,
+      payout_date,
+      period,
+      extraHours,
+      items,
+    } = req.body
 
     const budget: Budget = await prisma.budget.create({
       data: {
         cutoff_start: new Date(cutoff_start),
         cutoff_end: new Date(cutoff_end),
         payout_date: new Date(payout_date),
+        extraHours,
         period: period === 15 ? 'fifteen' : 'thirty',
         userId: user.id,
       },
