@@ -173,6 +173,10 @@ export const getAll = async (
         const remainingBudget = netSalaryWithAdditionalIncomes - totalExpenses
 
         return {
+          id: budget.id,
+          cutoff_start: budget.cutoff_start,
+          cutoff_end: budget.cutoff_end,
+          payout_date: budget.payout_date,
           noOfHours,
           grossSalary,
           netSalary,

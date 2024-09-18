@@ -9,6 +9,10 @@ export type BudgetItem = {
 }
 
 export type GetBudgetsResponse = {
+  id: string
+  cutoff_start: Date
+  cutoff_end: Date
+  payout_date: Date
   noOfHours: number
   grossSalary: number
   netSalary: number
