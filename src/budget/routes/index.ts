@@ -5,7 +5,7 @@ import {
   isAuthenticated,
   validRouteRequest,
 } from '../../middleware'
-import { create, getAll } from '../handlers'
+import { create, getAll, getById, toggleBudgetItem } from '../handlers'
 import { createBudgetRules } from '../middleware/rules'
 
 const router = Router()
@@ -26,6 +26,22 @@ router.get(
   isAuthenticated,
   validRouteRequest,
   getAll
+)
+
+router.get(
+  '/get-budget/:id',
+  accessingRoute,
+  isAuthenticated,
+  validRouteRequest,
+  getById
+)
+
+router.patch(
+  '/toggle-item/:id',
+  accessingRoute,
+  isAuthenticated,
+  validRouteRequest,
+  toggleBudgetItem
 )
 
 export default router

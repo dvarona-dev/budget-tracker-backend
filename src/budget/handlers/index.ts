@@ -4,7 +4,7 @@ import { prisma } from '../..'
 import { UserModel } from '../../auth/types'
 import logger from '../../logger'
 import { CreateBudgetBody, CreateResponse } from '../types/create'
-import { ViewResponse } from '../types/view'
+import { ViewAllResponse, IdAsParams, ViewByIdResponse } from '../types/view'
 import { prettifyObject } from '../../utils/format'
 import { getWorkDays } from '../../utils'
 import { HOURS_PER_DAY } from '../constants'
@@ -86,10 +86,11 @@ export const create = async (
 
 export const getAll = async (
   req: Request<{}, {}, UserModel>,
-  res: Response<ViewResponse>
+  res: Response<ViewAllResponse>
 ) => {
   try {
     const user = req.body.user
+
     const budgets: Budget[] = await prisma.budget.findMany({
       where: {
         userId: user.id,
@@ -198,6 +199,65 @@ export const getAll = async (
     res.send({
       message: 'success',
       budgets: formattedBudgets,
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'server error in fetching budgets' })
+  }
+}
+
+export const getById = async (
+  req: Request<IdAsParams, {}, UserModel>,
+  res: Response<ViewByIdResponse>
+) => {
+  try {
+    const { id } = req.params
+    const { user } = req.body
+
+    const budget = await prisma.budget.findUniqueOrThrow({
+      where: { id, userId: user.id },
+      include: {
+        items: true,
+      },
+    })
+
+    logger.info(`Budget fetched successfully: ${prettifyObject(budget)}`)
+
+    res.send({
+      message: 'success',
+      budget,
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'server error in fetching budgets' })
+  }
+}
+
+export const toggleBudgetItem = async (
+  req: Request<IdAsParams, {}, {}>,
+  res: Response<ViewByIdResponse>
+) => {
+  try {
+    const { id } = req.params
+
+    const budgetItem = await prisma.budgetItem.findUniqueOrThrow({
+      where: { id },
+      select: {
+        isCompleted: true,
+      },
+    })
+
+    await prisma.budgetItem.update({
+      where: { id },
+      data: {
+        isCompleted: !budgetItem.isCompleted,
+      },
+    })
+
+    logger.info(`Budget item toggled successfully (id): ${id}`)
+
+    res.send({
+      message: 'success',
     })
   } catch (error) {
     logger.error(error)
