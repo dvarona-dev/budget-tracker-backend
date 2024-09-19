@@ -60,6 +60,7 @@ model BudgetItem {
   id           String     @id @default(auto()) @map("_id") @db.ObjectId
   description  String
   amount       Float
+  isCompleted  Boolean    @default(false)
   Budget       Budget     @relation(fields: [budgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   budgetId     String     @db.ObjectId
   UserMember   UserMember @relation(fields: [userMemberId], references: [id], onDelete: Cascade, onUpdate: Cascade)

@@ -20,10 +20,4 @@ export type GetBudgetsResponse = {
   netSalaryWithAdditionalIncomes: number
   totalExpenses: number
   remainingBudget: number
-  allExpenses: {
-    id: string
-    description: string
-    amount: number
-    assignedTo: string
-  }[]
 }

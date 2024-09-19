@@ -35,13 +35,37 @@ export const create = async (
       },
     })
 
+    const generalUserMember = await prisma.userMember.findUniqueOrThrow({
+      where: {
+        userId: user.id,
+        name: 'general',
+      },
+      select: {
+        id: true,
+      },
+    })
+    const expensesOfPeriod = await prisma.expense.findMany({
+      where: {
+        userId: user.id,
+        period: budget.period,
+      },
+    })
+
+    const mappedItems = items.map((item) => ({
+      description: item.description,
+      amount: item.amount,
+      budgetId: budget.id,
+      userMemberId: item.assignedTo,
+    }))
+    const mappedExpenses = expensesOfPeriod.map((expense) => ({
+      description: expense.description,
+      amount: expense.amount,
+      budgetId: budget.id,
+      userMemberId: generalUserMember.id,
+    }))
+
     await prisma.budgetItem.createMany({
-      data: items.map((item) => ({
-        description: item.description,
-        amount: item.amount,
-        budgetId: budget.id,
-        userMemberId: item.assignedTo,
-      })),
+      data: [...mappedItems, ...mappedExpenses],
     })
 
     const newBudget = await prisma.budget.findUniqueOrThrow({
@@ -139,28 +163,7 @@ export const getAll = async (
             assignedTo: budgetItem.UserMember.name,
           }
         })
-        const expenses = (
-          await prisma.expense.findMany({
-            where: {
-              userId: user.id,
-              period: budget.period,
-            },
-            select: {
-              id: true,
-              description: true,
-              amount: true,
-            },
-          })
-        ).map((expense) => {
-          return {
-            id: expense.id,
-            description: expense.description,
-            amount: expense.amount,
-            assignedTo: 'general',
-          }
-        })
-        const allExpenses = [...budgetItems, ...expenses]
-        const totalExpenses = allExpenses.reduce(
+        const totalExpenses = budgetItems.reduce(
           (acc, expense) => acc + expense.amount,
           0
         )
@@ -184,7 +187,6 @@ export const getAll = async (
           netSalaryWithAdditionalIncomes,
           totalExpenses,
           remainingBudget,
-          allExpenses,
         }
       })
     )
