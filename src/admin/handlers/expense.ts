@@ -63,6 +63,7 @@ export const updateExpenses = async (
 
     await Promise.all(
       expenses.map(async (expense) => {
+        // TODO: update budget items as well
         const { id, description, amount, period } = expense
         if (id) {
           const updatedExpense = await prisma.expense.update({
@@ -76,6 +77,7 @@ export const updateExpenses = async (
 
           logger.info(`Expense is updated: ${prettifyObject(updatedExpense)}`)
         } else {
+          // TODO: create budget items as well
           const newExpense = await prisma.expense.create({
             data: {
               description,
