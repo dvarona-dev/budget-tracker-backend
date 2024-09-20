@@ -221,11 +221,64 @@ export const getById = async (
       },
     })
 
+    const income = await prisma.income.findFirstOrThrow({
+      where: {
+        userId: user.id,
+      },
+    })
+    const additionalIncomes = await prisma.additionalIncome.findMany({
+      where: {
+        incomeId: income.id,
+      },
+    })
+    const totalAdditionalIncomes = additionalIncomes.reduce(
+      (acc, additionalIncome) => acc + additionalIncome.amount,
+      0
+    )
+
+    const noOfWorkDays = await getWorkDays(
+      budget.cutoff_start,
+      budget.cutoff_end,
+      user.id
+    )
+
+    const deductions = await prisma.deduction.findMany({
+      where: {
+        userId: user.id,
+        period: budget.period,
+      },
+    })
+    const totalDeductions = deductions.reduce(
+      (acc, deduction) => acc + deduction.amount,
+      0
+    )
+
+    const totalExpenses = budget.items.reduce(
+      (acc, expense) => acc + expense.amount,
+      0
+    )
+
+    const noOfHours = noOfWorkDays * (HOURS_PER_DAY + budget.extraHours)
+    const grossSalary = income.hourRate * noOfHours
+    const netSalary = grossSalary - totalDeductions
+    const netSalaryWithAdditionalIncomes = netSalary + totalAdditionalIncomes
+    const remainingBudget = netSalaryWithAdditionalIncomes - totalExpenses
+
+    const budgetResponse = {
+      ...budget,
+      noOfHours,
+      grossSalary,
+      netSalary,
+      netSalaryWithAdditionalIncomes,
+      remainingBudget,
+      totalAdditionalIncomes,
+    }
+
     logger.info(`Budget fetched successfully: ${prettifyObject(budget)}`)
 
     res.send({
       message: 'success',
-      budget,
+      budget: budgetResponse,
     })
   } catch (error) {
     logger.error(error)
