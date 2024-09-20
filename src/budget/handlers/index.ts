@@ -272,6 +272,7 @@ export const getById = async (
       netSalaryWithAdditionalIncomes,
       remainingBudget,
       totalAdditionalIncomes,
+      totalExpenses,
     }
 
     logger.info(`Budget fetched successfully: ${prettifyObject(budget)}`)
