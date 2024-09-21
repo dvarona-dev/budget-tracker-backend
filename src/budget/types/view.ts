@@ -1,9 +1,9 @@
 import { Budget } from '@prisma/client'
-import { GetBudgetsResponse } from './budget'
+import { GetBudgetResponse } from './budget'
 
 export type ViewAllResponse = {
   message: string
-  budgets?: GetBudgetsResponse[]
+  budgets?: GetBudgetResponse[]
 }
 
 export type IdAsParams = {
@@ -12,5 +12,9 @@ export type IdAsParams = {
 
 export type ViewByIdResponse = {
   message: string
-  budget?: Budget
+  budget?: Budget & GetBudgetResponse
+}
+
+export type MessageResponse = {
+  message: string
 }

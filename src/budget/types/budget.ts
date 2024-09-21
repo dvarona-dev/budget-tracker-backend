@@ -8,16 +8,22 @@ export type BudgetItem = {
   assignedTo: UserMember['id']
 }
 
-export type GetBudgetsResponse = {
+export type GetBudgetResponse = {
   id: string
+  payout_date: Date
   cutoff_start: Date
   cutoff_end: Date
-  payout_date: Date
   noOfHours: number
   grossSalary: number
   netSalary: number
-  totalAdditionalIncomes: number
-  netSalaryWithAdditionalIncomes: number
-  totalExpenses: number
   remainingBudget: number
+  netSalaryWithAdditionalIncomes?: number
+  totalAdditionalIncomes?: number
+  totalExpenses?: number
+}
+
+export type UpdateBudgetItemBody = {
+  id: string
+  description: string
+  amount: number
 }

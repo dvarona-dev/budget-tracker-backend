@@ -5,8 +5,14 @@ import {
   isAuthenticated,
   validRouteRequest,
 } from '../../middleware'
-import { create, getAll, getById, toggleBudgetItem } from '../handlers'
-import { createBudgetRules } from '../middleware/rules'
+import {
+  create,
+  getAll,
+  getById,
+  toggleBudgetItem,
+  updateBudgetItem,
+} from '../handlers'
+import { createBudgetRules, updateBudgetItemRules } from '../middleware/rules'
 
 const router = Router()
 
@@ -44,6 +50,14 @@ router.patch(
   toggleBudgetItem
 )
 
-// TODO: Add route for updating description and/or amount of each budget item by ID
+router.patch(
+  '/update-item',
+  accessingRoute,
+  isAuthenticated,
+  ...updateBudgetItemRules,
+  expressValidator,
+  validRouteRequest,
+  updateBudgetItem
+)
 
 export default router

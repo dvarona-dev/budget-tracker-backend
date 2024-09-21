@@ -4,10 +4,16 @@ import { prisma } from '../..'
 import { UserModel } from '../../auth/types'
 import logger from '../../logger'
 import { CreateBudgetBody, CreateResponse } from '../types/create'
-import { ViewAllResponse, IdAsParams, ViewByIdResponse } from '../types/view'
+import {
+  ViewAllResponse,
+  IdAsParams,
+  ViewByIdResponse,
+  MessageResponse,
+} from '../types/view'
 import { prettifyObject } from '../../utils/format'
 import { getWorkDays } from '../../utils'
 import { HOURS_PER_DAY } from '../constants'
+import { UpdateBudgetItemBody } from '../types/budget'
 
 export const create = async (
   req: Request<{}, {}, CreateBudgetBody & UserModel>,
@@ -178,15 +184,12 @@ export const getAll = async (
 
         return {
           id: budget.id,
+          payout_date: budget.payout_date,
           cutoff_start: budget.cutoff_start,
           cutoff_end: budget.cutoff_end,
-          payout_date: budget.payout_date,
           noOfHours,
           grossSalary,
           netSalary,
-          totalAdditionalIncomes,
-          netSalaryWithAdditionalIncomes,
-          totalExpenses,
           remainingBudget,
         }
       })
@@ -309,6 +312,32 @@ export const toggleBudgetItem = async (
     })
 
     logger.info(`Budget item toggled successfully (id): ${id}`)
+
+    res.send({
+      message: 'success',
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'server error in fetching budgets' })
+  }
+}
+
+export const updateBudgetItem = async (
+  req: Request<{}, {}, UpdateBudgetItemBody>,
+  res: Response<MessageResponse>
+) => {
+  try {
+    const { id, description, amount } = req.body
+
+    await prisma.budgetItem.update({
+      where: { id },
+      data: {
+        description,
+        amount,
+      },
+    })
+
+    logger.info(`Budget item is updated successfully (id): ${id}`)
 
     res.send({
       message: 'success',

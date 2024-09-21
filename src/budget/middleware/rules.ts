@@ -122,3 +122,32 @@ export const createBudgetRules = [
       }
     }),
 ]
+
+export const updateBudgetItemRules = [
+  body('id')
+    .notEmpty()
+    .withMessage('id is required')
+    .isString()
+    .withMessage('id must be a string')
+    .custom(async (id) => {
+      const budgetItem = await prisma.budgetItem.findUnique({
+        where: {
+          id,
+        },
+      })
+
+      if (!budgetItem) {
+        throw new Error('id is not valid')
+      }
+    }),
+  body('description')
+    .notEmpty()
+    .withMessage('description is required')
+    .isString()
+    .withMessage('description must be a string'),
+  body('amount').custom(async (amount) => {
+    if (typeof amount !== 'number' || amount <= 0) {
+      throw new Error('amount must be a number greater than 0')
+    }
+  }),
+]
