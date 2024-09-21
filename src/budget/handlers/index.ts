@@ -62,12 +62,14 @@ export const create = async (
       amount: item.amount,
       budgetId: budget.id,
       userMemberId: item.assignedTo,
+      referenceId: null,
     }))
     const mappedExpenses = expensesOfPeriod.map((expense) => ({
       description: expense.description,
       amount: expense.amount,
       budgetId: budget.id,
       userMemberId: generalUserMember.id,
+      referenceId: expense.id,
     }))
 
     await prisma.budgetItem.createMany({

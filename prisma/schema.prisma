@@ -61,6 +61,7 @@ model BudgetItem {
   description  String
   amount       Float
   isCompleted  Boolean    @default(false)
+  referenceId  String?    @db.ObjectId
   Budget       Budget     @relation(fields: [budgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   budgetId     String     @db.ObjectId
   UserMember   UserMember @relation(fields: [userMemberId], references: [id], onDelete: Cascade, onUpdate: Cascade)

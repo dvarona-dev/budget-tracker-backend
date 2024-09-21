@@ -47,7 +47,6 @@ export const updateExpenses = async (
       .filter((expense) => expense.id)
       .map((expense) => expense.id)
 
-    // TODO: delete budget items as well
     const willDeleteExpenses = await prisma.expense.findMany({
       where: {
         userId: user.id,
@@ -57,13 +56,17 @@ export const updateExpenses = async (
     await Promise.all(
       willDeleteExpenses.map(async (expense) => {
         await prisma.expense.delete({ where: { id: expense.id } })
+        await prisma.budgetItem.deleteMany({
+          where: {
+            referenceId: expense.id,
+          },
+        })
         logger.info(`Expense is deleted: ${prettifyObject(expense)}`)
       })
     )
 
     await Promise.all(
       expenses.map(async (expense) => {
-        // TODO: update budget items as well
         const { id, description, amount, period } = expense
         if (id) {
           const updatedExpense = await prisma.expense.update({
@@ -74,18 +77,73 @@ export const updateExpenses = async (
               period: period === 15 ? 'fifteen' : 'thirty',
             },
           })
+          const expenseOnABudget = await prisma.budgetItem.findMany({
+            where: {
+              referenceId: id,
+            },
+            select: {
+              id: true,
+            },
+          })
+
+          await Promise.all(
+            expenseOnABudget.map(async (budgetItem) => {
+              await prisma.budgetItem.update({
+                where: {
+                  id: budgetItem.id,
+                },
+                data: {
+                  description,
+                  amount,
+                },
+              })
+            })
+          )
 
           logger.info(`Expense is updated: ${prettifyObject(updatedExpense)}`)
         } else {
-          // TODO: create budget items as well
+          const periodText = period === 15 ? 'fifteen' : 'thirty'
           const newExpense = await prisma.expense.create({
             data: {
               description,
               amount,
-              period: period === 15 ? 'fifteen' : 'thirty',
+              period: periodText,
               userId: user.id,
             },
           })
+
+          const generalUserMember = await prisma.userMember.findUniqueOrThrow({
+            where: {
+              userId: user.id,
+              name: 'general',
+            },
+            select: {
+              id: true,
+            },
+          })
+          const budgetWithSamePeriod = await prisma.budget.findMany({
+            where: {
+              userId: user.id,
+              period: periodText,
+            },
+            select: {
+              id: true,
+            },
+          })
+
+          await Promise.all(
+            budgetWithSamePeriod.map(async (budget) => {
+              await prisma.budgetItem.create({
+                data: {
+                  description,
+                  amount,
+                  budgetId: budget.id,
+                  userMemberId: generalUserMember.id,
+                  referenceId: newExpense.id,
+                },
+              })
+            })
+          )
 
           logger.info(`Expense is created: ${prettifyObject(newExpense)}`)
         }
