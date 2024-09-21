@@ -2,6 +2,7 @@ import { body } from 'express-validator'
 import { prisma } from '../..'
 import logger from '../../logger'
 import { BudgetItem, BudgetPeriod } from '../types/budget'
+import { Request } from 'express'
 
 const checkIfValidDates = async (date: Date) => {
   if (isNaN(date.getTime())) {
@@ -9,9 +10,10 @@ const checkIfValidDates = async (date: Date) => {
   }
 }
 
-// TODO: Add types in request
 export const createBudgetRules = [
-  body('cutoff_start').custom(async (value: Date, { req }) => {
+  body('cutoff_start').custom(async (value: Date, meta) => {
+    const req = meta.req as unknown as Request
+
     try {
       const cutoff_start = new Date(value)
       const cutoff_end = new Date(req.body.cutoff_end)
@@ -29,7 +31,9 @@ export const createBudgetRules = [
       throw new Error('cutoff_start must be a valid date')
     }
   }),
-  body('cutoff_end').custom(async (value: Date, { req }) => {
+  body('cutoff_end').custom(async (value: Date, meta) => {
+    const req = meta.req as unknown as Request
+
     try {
       const cutoff_start = new Date(req.body.cutoff_start)
       const cutoff_end = new Date(value)
@@ -47,7 +51,9 @@ export const createBudgetRules = [
       throw new Error('cutoff_end must be a valid date')
     }
   }),
-  body('payout_date').custom(async (value: Date, { req }) => {
+  body('payout_date').custom(async (value: Date, meta) => {
+    const req = meta.req as unknown as Request
+
     try {
       const cutoff_start = new Date(req.body.cutoff_start)
       const cutoff_end = new Date(req.body.cutoff_end)

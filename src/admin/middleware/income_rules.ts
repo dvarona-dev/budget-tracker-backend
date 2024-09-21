@@ -1,5 +1,6 @@
 import { body } from 'express-validator'
 import { AdditionalIncome } from '../types/income'
+import { Request } from 'express'
 
 const incomeRules = [
   body('hourRate')
@@ -10,7 +11,9 @@ const incomeRules = [
   body('additionals')
     .isArray({ min: 1 })
     .withMessage('additionals must be an array with at least one member')
-    .custom(async (additionals: AdditionalIncome[], { req }) => {
+    .custom(async (additionals: AdditionalIncome[], meta) => {
+      const req = meta.req as unknown as Request
+
       const validItems = additionals.filter((item) => {
         const { id, description, amount } = item
         if (

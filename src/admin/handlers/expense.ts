@@ -47,13 +47,13 @@ export const updateExpenses = async (
       .filter((expense) => expense.id)
       .map((expense) => expense.id)
 
+    // TODO: delete budget items as well
     const willDeleteExpenses = await prisma.expense.findMany({
       where: {
         userId: user.id,
         id: { notIn: expenseIds },
       },
     })
-
     await Promise.all(
       willDeleteExpenses.map(async (expense) => {
         await prisma.expense.delete({ where: { id: expense.id } })

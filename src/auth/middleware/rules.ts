@@ -1,3 +1,4 @@
+import { Request } from 'express'
 import { body } from 'express-validator'
 
 export const signupRules = [
@@ -7,7 +8,9 @@ export const signupRules = [
   body('password')
     .isLength({ min: 7 })
     .withMessage('password must be at least 7 characters long'),
-  body('confirmPassword').custom(async (value, { req }) => {
+  body('confirmPassword').custom(async (value, meta) => {
+    const req = meta.req as unknown as Request
+
     if (value !== req.body.password) {
       throw new Error('passwords do not match')
     }
