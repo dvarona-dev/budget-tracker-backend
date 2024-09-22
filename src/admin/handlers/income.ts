@@ -52,10 +52,12 @@ export const updateIncome = async (
   try {
     const { incomeId, hourRate, additionals } = req.body
 
+    // update additional incomes
     await Promise.all(
       additionals.map(async (item) => {
         const { id, description, amount } = item
         if (id) {
+          // update additional income (for now only 1 entry)
           const updatedAdditionalIncome = await prisma.additionalIncome.update({
             where: { id },
             data: {

@@ -47,15 +47,16 @@ export const updateDeductions = async (
       .filter((deduction) => deduction.id)
       .map((deduction) => deduction.id)
 
-    const willDeleteDeductions = await prisma.deduction.findMany({
+    const geDeletedIds = await prisma.deduction.findMany({
       where: {
         userId: user.id,
         id: { notIn: deductionIds },
       },
     })
 
+    // delete deductions that are not in the request
     await Promise.all(
-      willDeleteDeductions.map(async (deduction) => {
+      geDeletedIds.map(async (deduction) => {
         await prisma.deduction.delete({ where: { id: deduction.id } })
         logger.info(`Deduction is deleted: ${prettifyObject(deduction)}`)
       })
@@ -65,6 +66,7 @@ export const updateDeductions = async (
       deductions.map(async (deduction) => {
         const { id, description, amount, period } = deduction
         if (id) {
+          // update existing deduction
           const updatedDeduction = await prisma.deduction.update({
             where: { id, userId: user.id },
             data: {
@@ -78,6 +80,7 @@ export const updateDeductions = async (
             `Deduction is updated: ${prettifyObject(updatedDeduction)}`
           )
         } else {
+          // create new deduction
           const newDeduction = await prisma.deduction.create({
             data: {
               description,

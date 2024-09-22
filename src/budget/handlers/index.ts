@@ -50,6 +50,7 @@ export const create = async (
         id: true,
       },
     })
+
     const expensesOfPeriod = await prisma.expense.findMany({
       where: {
         userId: user.id,
@@ -113,16 +114,19 @@ export const getAll = async (
         },
       },
     })
+
     const income = await prisma.income.findFirstOrThrow({
       where: {
         userId: user.id,
       },
     })
+
     const additionalIncomes = await prisma.additionalIncome.findMany({
       where: {
         incomeId: income.id,
       },
     })
+
     const totalAdditionalIncomes = additionalIncomes.reduce(
       (acc, additionalIncome) => acc + additionalIncome.amount,
       0
@@ -231,11 +235,13 @@ export const getById = async (
         userId: user.id,
       },
     })
+
     const additionalIncomes = await prisma.additionalIncome.findMany({
       where: {
         incomeId: income.id,
       },
     })
+
     const totalAdditionalIncomes = additionalIncomes.reduce(
       (acc, additionalIncome) => acc + additionalIncome.amount,
       0
@@ -253,6 +259,7 @@ export const getById = async (
         period: budget.period,
       },
     })
+
     const totalDeductions = deductions.reduce(
       (acc, deduction) => acc + deduction.amount,
       0

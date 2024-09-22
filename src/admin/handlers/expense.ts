@@ -47,20 +47,25 @@ export const updateExpenses = async (
       .filter((expense) => expense.id)
       .map((expense) => expense.id)
 
-    const willDeleteExpenses = await prisma.expense.findMany({
+    const getDeletedIds = await prisma.expense.findMany({
       where: {
         userId: user.id,
         id: { notIn: expenseIds },
       },
     })
+
+    // delete expenses that are not in the request
     await Promise.all(
-      willDeleteExpenses.map(async (expense) => {
+      getDeletedIds.map(async (expense) => {
         await prisma.expense.delete({ where: { id: expense.id } })
+
+        // also delete the expenses that are already added in the budget items
         await prisma.budgetItem.deleteMany({
           where: {
             referenceId: expense.id,
           },
         })
+
         logger.info(`Expense is deleted: ${prettifyObject(expense)}`)
       })
     )
@@ -69,6 +74,7 @@ export const updateExpenses = async (
       expenses.map(async (expense) => {
         const { id, description, amount, period } = expense
         if (id) {
+          // update expense
           const updatedExpense = await prisma.expense.update({
             where: { id, userId: user.id },
             data: {
@@ -77,6 +83,8 @@ export const updateExpenses = async (
               period: period === 15 ? 'fifteen' : 'thirty',
             },
           })
+
+          // also update the expenses that are already added in the budget items
           const expenseOnABudget = await prisma.budgetItem.findMany({
             where: {
               referenceId: id,
@@ -86,6 +94,7 @@ export const updateExpenses = async (
             },
           })
 
+          // update budget items
           await Promise.all(
             expenseOnABudget.map(async (budgetItem) => {
               await prisma.budgetItem.update({
@@ -102,6 +111,7 @@ export const updateExpenses = async (
 
           logger.info(`Expense is updated: ${prettifyObject(updatedExpense)}`)
         } else {
+          // create new expense
           const periodText = period === 15 ? 'fifteen' : 'thirty'
           const newExpense = await prisma.expense.create({
             data: {
@@ -121,6 +131,8 @@ export const updateExpenses = async (
               id: true,
             },
           })
+
+          // find budgets with the same period (15/30)
           const budgetWithSamePeriod = await prisma.budget.findMany({
             where: {
               userId: user.id,
@@ -131,6 +143,7 @@ export const updateExpenses = async (
             },
           })
 
+          // create budget items on each found budget with the new expense details
           await Promise.all(
             budgetWithSamePeriod.map(async (budget) => {
               await prisma.budgetItem.create({
