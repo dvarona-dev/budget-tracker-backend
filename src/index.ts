@@ -26,13 +26,16 @@ import expenseRoutes from './admin/routes/expense'
 import deductionRoutes from './admin/routes/deduction'
 import holidayRoutes from './admin/routes/holiday'
 
-// TODO: add /api/v1/ to routes
-app.use('/auth', authRoutes)
-app.use('/budget', budgetRoutes)
-app.use('/admin/income', incomeRoutes)
-app.use('/admin/expense', expenseRoutes)
-app.use('/admin/deduction', deductionRoutes)
-app.use('/admin/holiday', holidayRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/budget', budgetRoutes)
+app.use('/api/v1/admin/income', incomeRoutes)
+app.use('/api/v1/admin/expense', expenseRoutes)
+app.use('/api/v1/admin/deduction', deductionRoutes)
+app.use('/api/v1/admin/holiday', holidayRoutes)
+
+app.use('/api/v1/status', async (_, res: Response) => {
+  res.status(200).send({ message: 'API is healthy' })
+})
 
 // catch all other routes and return 404
 app.use('*', (_, res: Response) => {

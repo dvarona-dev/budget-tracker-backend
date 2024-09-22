@@ -1,5 +1,5 @@
 import { User } from '@prisma/client'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 import { Request, Response } from 'express'
 import { prisma } from '../..'
 import logger from '../../logger'
@@ -69,13 +69,11 @@ export const signup = async (
         username,
         password: hasedPassword,
         members: {
-          create: [...members.map((name) => name.toLowerCase()), 'general'].map(
-            (name) => {
-              return {
-                name,
-              }
+          create: [...members.map((name) => name.toLowerCase())].map((name) => {
+            return {
+              name,
             }
-          ),
+          }),
         },
       },
     })
