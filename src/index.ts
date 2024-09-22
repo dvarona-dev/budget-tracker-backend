@@ -25,6 +25,8 @@ import incomeRoutes from './admin/routes/income'
 import expenseRoutes from './admin/routes/expense'
 import deductionRoutes from './admin/routes/deduction'
 import holidayRoutes from './admin/routes/holiday'
+
+// TODO: add /api/v1/ to routes
 app.use('/auth', authRoutes)
 app.use('/budget', budgetRoutes)
 app.use('/admin/income', incomeRoutes)
