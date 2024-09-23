@@ -133,11 +133,13 @@ export const updateExpenses = async (
           })
 
           // find budgets with the same period (15/30)
-          // TODO: only find budgets with payout date in the future
           const budgetWithSamePeriod = await prisma.budget.findMany({
             where: {
               userId: user.id,
               period: periodText,
+              payout_date: {
+                gte: new Date(),
+              },
             },
             select: {
               id: true,
