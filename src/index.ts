@@ -6,7 +6,7 @@ import logger from './logger'
 
 export const prisma = new PrismaClient()
 
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` })
+dotenv.config({ path: `.env` })
 
 const app = express()
 
