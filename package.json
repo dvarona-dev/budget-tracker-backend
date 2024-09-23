@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc --build",
     "start": "node ./dist/index.js",
-    "dev": "rm -rf ./logs && npm run db:sync && nodemon -L ./src/index.ts",
+    "dev": "rm -rf ./logs && npm run db:sync && cross-env NODE_ENV=development nodemon -L ./src/index.ts",
+    "dev:local": "rm -rf ./logs && cross-env NODE_ENV=development nodemon ./src/index.ts",
     "db:sync": "prisma generate"
   },
   "keywords": [],
@@ -27,6 +28,7 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.7",
+    "cross-env": "^7.0.3",
     "nodemon": "^3.1.7",
     "prisma": "^5.19.1",
     "ts-node": "^10.9.2",

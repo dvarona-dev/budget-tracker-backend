@@ -1,12 +1,13 @@
 import jwt from 'jsonwebtoken'
 import logger from '../logger'
 
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+
 export const signJWT = (
   payload: object,
   expiresIn: string | number
 ): string => {
   try {
-    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
     if (!JWT_SECRET_KEY) {
       logger.error('JWT_SECRET_KEY not found in environment variables')
       throw new Error('JWT_SECRET_KEY not found in environment variables')
@@ -20,7 +21,6 @@ export const signJWT = (
 
 export const verifyJWT = (token: string): string | jwt.JwtPayload => {
   try {
-    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
     if (!JWT_SECRET_KEY) {
       logger.error('JWT_SECRET_KEY not found in environment variables')
       throw new Error('JWT_SECRET_KEY not found in environment variables')
