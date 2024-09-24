@@ -19,3 +19,8 @@ export type IncomeResponse = {
   message: 'success' | 'failed'
   income?: Income | Income[]
 }
+
+export type PerHourRateResponse = {
+  message: 'success' | 'failed'
+  perHourRate: number
+}

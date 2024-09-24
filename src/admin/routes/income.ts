@@ -5,7 +5,12 @@ import {
   isAuthenticated,
   validRouteRequest,
 } from '../../middleware'
-import { getIncome, newIncome, updateIncome } from '../handlers/income'
+import {
+  getIncome,
+  getPerHourRate,
+  newIncome,
+  updateIncome,
+} from '../handlers/income'
 import { newIncomeRules, updateIncomeRules } from '../middleware/income_rules'
 
 const router = Router()
@@ -37,6 +42,15 @@ router.put(
   expressValidator,
   validRouteRequest,
   updateIncome
+)
+
+router.get(
+  '/hourRate',
+  accessingRoute,
+  isAuthenticated,
+  expressValidator,
+  validRouteRequest,
+  getPerHourRate
 )
 
 export default router

@@ -7,6 +7,7 @@ import { prettifyObject } from '../../utils/format'
 import {
   IncomeResponse,
   NewIncomeBody,
+  PerHourRateResponse,
   UpdateIncomeBody,
 } from '../types/income'
 
@@ -22,10 +23,19 @@ export const newIncome = async (
         hourRate,
         userId: user.id.toString(),
         additionalIncomes: {
-          create: additionals.map((item) => ({
-            description: item.description,
-            amount: item.amount,
-          })),
+          create: additionals
+            .filter((item) => {
+              const { description, amount } = item
+              if (description && amount > 0) {
+                return true
+              }
+
+              return false
+            })
+            .map((item) => ({
+              description: item.description,
+              amount: item.amount,
+            })),
         },
       },
       include: {
@@ -129,5 +139,38 @@ export const getIncome = async (
   } catch (error) {
     logger.error(error)
     res.status(500).send({ message: 'failed' })
+  }
+}
+
+export const getPerHourRate = async (
+  req: Request<{}, {}, UserModel>,
+  res: Response<PerHourRateResponse>
+) => {
+  try {
+    const { user } = req.body
+
+    const ratePerHour = await prisma.income.findFirst({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        hourRate: true,
+      },
+    })
+
+    if (!ratePerHour) {
+      return res.send({
+        message: 'success',
+        perHourRate: 0,
+      })
+    }
+
+    res.send({
+      message: 'success',
+      perHourRate: ratePerHour.hourRate,
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'failed', perHourRate: 0 })
   }
 }

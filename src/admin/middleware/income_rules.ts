@@ -9,9 +9,13 @@ const incomeRules = [
     .isFloat({ gt: 0 })
     .withMessage('hourRate must be greater than 0'),
   body('additionals')
-    .isArray({ min: 1 })
+    .isArray()
     .withMessage('additionals must be an array with at least one member')
     .custom(async (additionals: AdditionalIncome[], meta) => {
+      const isDefaultBody =
+        additionals.length === 1 &&
+        additionals[0].description === '' &&
+        additionals[0].amount === 0
       const req = meta.req as unknown as Request
 
       const validItems = additionals.filter((item) => {
@@ -29,7 +33,7 @@ const incomeRules = [
         return true
       })
 
-      if (validItems.length !== additionals.length) {
+      if (validItems.length !== additionals.length && !isDefaultBody) {
         throw new Error('one or more additionals are invalid')
       }
     }),

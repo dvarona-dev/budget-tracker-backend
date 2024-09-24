@@ -9,7 +9,6 @@ export const prisma = new PrismaClient()
 dotenv.config({ path: `.env` })
 
 // TODO: check every prisma query and mutation for userId if needed
-// TODO: create budget only if atleast income per hour is set ( check for any needed data )
 
 const app = express()
 
