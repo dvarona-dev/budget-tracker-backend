@@ -8,8 +8,6 @@ export const prisma = new PrismaClient()
 
 dotenv.config({ path: `.env` })
 
-// TODO: check every prisma query and mutation for userId if needed
-
 const app = express()
 
 // START OF MIDDLEWARES ---
