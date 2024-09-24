@@ -21,7 +21,7 @@ export const newIncome = async (
     const newIncome: Income = await prisma.income.create({
       data: {
         hourRate,
-        userId: user.id.toString(),
+        userId: user.id,
         additionalIncomes: {
           create: additionals
             .filter((item) => {
@@ -56,11 +56,11 @@ export const newIncome = async (
 }
 
 export const updateIncome = async (
-  req: Request<{}, {}, UpdateIncomeBody>,
+  req: Request<{}, {}, UpdateIncomeBody & UserModel>,
   res: Response<IncomeResponse>
 ) => {
   try {
-    const { incomeId, hourRate, additionals } = req.body
+    const { incomeId, hourRate, additionals, user } = req.body
 
     // update additional incomes
     await Promise.all(
@@ -86,7 +86,7 @@ export const updateIncome = async (
     )
 
     const updatedIncome: Income = await prisma.income.update({
-      where: { id: incomeId },
+      where: { id: incomeId, userId: user.id },
       data: {
         hourRate,
       },

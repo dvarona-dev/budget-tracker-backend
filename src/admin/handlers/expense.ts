@@ -57,7 +57,9 @@ export const updateExpenses = async (
     // delete expenses that are not in the request
     await Promise.all(
       getDeletedIds.map(async (expense) => {
-        await prisma.expense.delete({ where: { id: expense.id } })
+        await prisma.expense.delete({
+          where: { id: expense.id, userId: user.id },
+        })
 
         // also delete the expenses that are already added in the budget items
         await prisma.budgetItem.deleteMany({

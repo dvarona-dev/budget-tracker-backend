@@ -78,7 +78,7 @@ export const create = async (
     })
 
     const newBudget = await prisma.budget.findUniqueOrThrow({
-      where: { id: budget.id },
+      where: { id: budget.id, userId: user.id },
       include: {
         items: true,
       },

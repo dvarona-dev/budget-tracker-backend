@@ -55,7 +55,9 @@ export const updateHolidays = async (
     // delete holidays that are not in the request
     await Promise.all(
       getDeletedIds.map(async (holiday) => {
-        await prisma.holiday.delete({ where: { id: holiday.id } })
+        await prisma.holiday.delete({
+          where: { id: holiday.id, userId: user.id },
+        })
         logger.info(`Holiday is deleted: ${prettifyObject(holiday)}`)
       })
     )

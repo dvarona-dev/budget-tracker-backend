@@ -57,7 +57,9 @@ export const updateDeductions = async (
     // delete deductions that are not in the request
     await Promise.all(
       geDeletedIds.map(async (deduction) => {
-        await prisma.deduction.delete({ where: { id: deduction.id } })
+        await prisma.deduction.delete({
+          where: { id: deduction.id, userId: user.id },
+        })
         logger.info(`Deduction is deleted: ${prettifyObject(deduction)}`)
       })
     )
