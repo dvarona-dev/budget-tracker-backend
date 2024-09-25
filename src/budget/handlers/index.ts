@@ -371,7 +371,13 @@ export const deleteById = async (
       },
     })
 
-    logger.info(`Budget is deleted successfully (id): ${id}`)
+    await prisma.budgetItem.deleteMany({
+      where: {
+        budgetId: id,
+      },
+    })
+
+    logger.info(`Budget and items are deleted successfully (id): ${id}`)
 
     res.send({
       message: 'success',
