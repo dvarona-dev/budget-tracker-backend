@@ -48,7 +48,6 @@ router.get(
   '/hourRate',
   accessingRoute,
   isAuthenticated,
-  expressValidator,
   validRouteRequest,
   getPerHourRate
 )

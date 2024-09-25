@@ -1,4 +1,4 @@
-import { body } from 'express-validator'
+import { body, param } from 'express-validator'
 import { prisma } from '../..'
 import logger from '../../logger'
 import { BudgetItem, BudgetPeriod } from '../types/budget'
@@ -154,6 +154,34 @@ export const updateBudgetItemRules = [
   body('amount').custom(async (amount) => {
     if (typeof amount !== 'number' || amount <= 0) {
       throw new Error('amount must be a number greater than 0')
+    }
+  }),
+]
+
+export const checkBudgetIdIfExisting = [
+  param('id').custom(async (id) => {
+    const budget = await prisma.budget.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!budget) {
+      throw new Error('budget cannot be found')
+    }
+  }),
+]
+
+export const checkBudgetItemIdIfExisting = [
+  param('id').custom(async (id) => {
+    const budgetItem = await prisma.budgetItem.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!budgetItem) {
+      throw new Error('budget item cannot be found')
     }
   }),
 ]

@@ -356,3 +356,28 @@ export const updateBudgetItem = async (
     res.status(500).send({ message: 'server error in fetching budgets' })
   }
 }
+
+export const deleteById = async (
+  req: Request<IdAsParams, {}, UserModel>,
+  res: Response<MessageResponse>
+) => {
+  const { id } = req.params
+  const { user } = req.body
+  try {
+    await prisma.budget.delete({
+      where: {
+        id,
+        userId: user.id,
+      },
+    })
+
+    logger.info(`Budget is deleted successfully (id): ${id}`)
+
+    res.send({
+      message: 'success',
+    })
+  } catch (error) {
+    logger.error(error)
+    res.status(500).send({ message: 'server error in deleting budget: ' + id })
+  }
+}

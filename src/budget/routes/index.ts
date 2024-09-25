@@ -7,12 +7,18 @@ import {
 } from '../../middleware'
 import {
   create,
+  deleteById,
   getAll,
   getById,
   toggleBudgetItem,
   updateBudgetItem,
 } from '../handlers'
-import { createBudgetRules, updateBudgetItemRules } from '../middleware/rules'
+import {
+  checkBudgetIdIfExisting,
+  checkBudgetItemIdIfExisting,
+  createBudgetRules,
+  updateBudgetItemRules,
+} from '../middleware/rules'
 
 const router = Router()
 
@@ -38,6 +44,8 @@ router.get(
   '/get-budget/:id',
   accessingRoute,
   isAuthenticated,
+  ...checkBudgetIdIfExisting,
+  expressValidator,
   validRouteRequest,
   getById
 )
@@ -46,6 +54,8 @@ router.patch(
   '/toggle-item/:id',
   accessingRoute,
   isAuthenticated,
+  ...checkBudgetItemIdIfExisting,
+  expressValidator,
   validRouteRequest,
   toggleBudgetItem
 )
@@ -58,6 +68,16 @@ router.patch(
   expressValidator,
   validRouteRequest,
   updateBudgetItem
+)
+
+router.delete(
+  '/delete-budget/:id',
+  accessingRoute,
+  isAuthenticated,
+  ...checkBudgetIdIfExisting,
+  expressValidator,
+  validRouteRequest,
+  deleteById
 )
 
 export default router
