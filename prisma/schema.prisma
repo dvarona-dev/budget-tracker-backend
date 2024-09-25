@@ -49,7 +49,7 @@ model Budget {
   payout_date  DateTime
   period       Period
   extraHours   Float
-  user         User         @relation(fields: [userId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId       String       @db.ObjectId
   items        BudgetItem[]
   createdAt    DateTime     @default(now())
@@ -74,7 +74,7 @@ model Income {
   id                String             @id @default(auto()) @map("_id") @db.ObjectId
   hourRate          Float
   additionalIncomes AdditionalIncome[]
-  user              User               @relation(fields: [userId], references: [id])
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId            String             @db.ObjectId
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
@@ -95,7 +95,7 @@ model Expense {
   description String
   amount      Float
   period      Period
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -106,7 +106,7 @@ model Deduction {
   description String
   amount      Float
   period      Period
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -116,7 +116,7 @@ model Holiday {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   description String   @unique
   date        DateTime @unique
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
