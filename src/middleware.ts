@@ -18,7 +18,8 @@ export const expressValidator = async (
       })}`
     )
 
-    return res.status(400).json({ message: errors.array()[0].msg })
+    res.status(400).json({ message: errors.array()[0].msg })
+    return
   }
 
   next()
@@ -63,12 +64,14 @@ export const isAuthenticated = async (
 ) => {
   const { authorization } = req.headers
   if (!authorization) {
-    return res.status(401).send({ message: 'unauthorized' })
+    res.status(401).send({ message: 'unauthorized' })
+    return
   }
 
   const token = authorization.split(' ')[1]
   if (!token) {
-    return res.status(401).send({ message: 'unauthorized' })
+    res.status(401).send({ message: 'unauthorized' })
+    return
   }
 
   try {
@@ -76,14 +79,15 @@ export const isAuthenticated = async (
     const user = await checkUserById(_id)
 
     if (!user) {
-      return res.status(401).send({ message: 'unauthorized' })
+      res.status(401).send({ message: 'unauthorized' })
+      return
     }
 
     req.body.user = user
+
+    next()
   } catch (err) {
     logger.error(`JWT Token Verification failed:`, err)
-    return res.status(401).send({ message: 'unauthorized' })
+    res.status(401).send({ message: 'unauthorized' })
   }
-
-  next()
 }

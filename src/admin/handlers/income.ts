@@ -159,10 +159,11 @@ export const getPerHourRate = async (
     })
 
     if (!ratePerHour) {
-      return res.send({
+      res.send({
         message: 'success',
         perHourRate: 0,
       })
+      return
     }
 
     res.send({

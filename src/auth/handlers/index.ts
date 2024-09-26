@@ -57,9 +57,10 @@ export const signup = async (
 
     if (user) {
       logger.error(`Username already taken: ${username}`)
-      return res.status(409).send({
+      res.status(409).send({
         message: 'username is already taken',
       })
+      return
     }
 
     const hasedPassword = bcrypt.hashSync(password, 12)
@@ -107,18 +108,20 @@ export const signin = async (
 
     if (!user) {
       logger.error(`User not found: ${username}`)
-      return res.status(404).send({
+      res.status(404).send({
         message: 'invalid username or password',
       })
+      return
     }
 
     const isPasswordValid = bcrypt.compareSync(password, user.password)
 
     if (!isPasswordValid) {
       logger.error(`Invalid password for user: ${username}`)
-      return res.status(404).send({
+      res.status(404).send({
         message: 'invalid username or password',
       })
+      return
     }
 
     const members = await prisma.userMember.findMany({
