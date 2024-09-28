@@ -13,12 +13,14 @@ export type SignInBody = {
 
 export type SignInResponse = {
   message: string
-  access_token?: string
-  expiresIn?: string
-  members?: {
-    id: string
-    name: string
-  }[]
+  data?: {
+    access_token: string
+    expiresIn: string
+    members: {
+      id: string
+      name: string
+    }[]
+  }
 }
 
 export type SignUpBody = SignInBody & {

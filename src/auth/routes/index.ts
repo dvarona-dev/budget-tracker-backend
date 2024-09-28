@@ -4,8 +4,12 @@ import {
   expressValidator,
   validRouteRequest,
 } from '../../middleware'
-import { signin, signup, verifyToken } from '../handlers'
-import { signinRules, signupRules, verifyTokenRules } from '../middleware/rules'
+import { verifyTokenRules } from '../middleware/verifyTokenRules'
+import { signup } from '../handlers/signup'
+import { signupRules } from '../middleware/signupRules'
+import { signinRules } from '../middleware/signinRules'
+import { signin } from '../handlers/signin'
+import { verifyToken } from '../handlers/verifyToken'
 
 const router = Router()
 

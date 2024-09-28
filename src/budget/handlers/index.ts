@@ -41,7 +41,7 @@ export const create = async (
       },
     })
 
-    const generalUserMember = await prisma.userMember.findUniqueOrThrow({
+    const generalUserMember = await prisma.userMember.findFirstOrThrow({
       where: {
         userId: user.id,
         name: 'general',

@@ -74,8 +74,10 @@ export const isAuthenticated = async (
     return
   }
 
-  try {
-    const { _id } = verifyJWT(token) as { _id: string }
+  const verifiedJWT = verifyJWT(token)
+
+  if (verifiedJWT && typeof verifiedJWT === 'object' && '_id' in verifiedJWT) {
+    const { _id } = verifiedJWT
     const user = await checkUserById(_id)
 
     if (!user) {
@@ -86,8 +88,8 @@ export const isAuthenticated = async (
     req.body.user = user
 
     next()
-  } catch (err) {
-    logger.error(`JWT Token Verification failed:`, err)
+  } else {
+    logger.error('JWT token verification failed')
     res.status(401).send({ message: 'unauthorized' })
   }
 }
